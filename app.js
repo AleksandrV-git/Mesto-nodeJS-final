@@ -1,9 +1,10 @@
-/*eslint-env es6*/
 const express = require('express');
 const mongoose = require('mongoose');
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
 
 const routeCards = require('./routes/cards.js');
 const routeUsers = require('./routes/users.js');
@@ -14,7 +15,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
 });
 
 app.use(limiter);
@@ -28,10 +29,29 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
+  }),
+}), login);
 
-app.use(auth);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/).required().min(2),
+  }),
+}), createUser);
+
+app.use(celebrate({
+  headers: Joi.object().keys({
+    cookies: Joi.object().keys({
+      jwt: Joi.string().token().required(),
+    }),
+  }).unknown(true),
+}), auth);
 
 app.use('/users', routeUsers);
 app.use('/cards', routeCards);
@@ -39,11 +59,12 @@ app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
+app.use(errors());
+
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
-  console.log(err.statusCode)
   const { statusCode = 500, message } = err;
-  
 
   res
     .status(statusCode)
@@ -51,9 +72,9 @@ app.use((err, req, res, next) => {
       // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
-        : message
+        : message,
     });
-}); 
+});
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

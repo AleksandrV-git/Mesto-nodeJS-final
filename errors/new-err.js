@@ -1,8 +1,8 @@
 class newErr extends Error {
-    constructor(message, errNum = 418) {
-      super(message);
-      this.statusCode = errNum;
-    }
+  constructor(message, errNum = 418) {
+    super(message);
+    this.statusCode = errNum;
   }
-  
-  module.exports = newErr; 
+}
+
+module.exports = newErr;

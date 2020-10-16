@@ -1,35 +1,35 @@
-/*eslint-env es6*/
+/* eslint-env es6 */
 const jwt = require('jsonwebtoken');
 
-const authErr = require('../errors/auth-err');
+const AuthErr = require('../errors/auth-err');
 
 module.exports = (req, res, next) => {
-    const authorization = req.cookies.jwt;
+  const authorization = req.cookies.jwt;
 
-    if (!authorization) {
-        next(new authErr('Необходима авторизация'));
-        return;
-    }
+  if (!authorization) {
+    next(new AuthErr('Необходима авторизация'));
+    return;
+  }
 
-    // if (!authorization || !authorization.startsWith('Bearer ')) {
-    //     return res
-    //         .status(401)
-    //         .send({ message: 'Необходима авторизация' });
-    // }
+  // if (!authorization || !authorization.startsWith('Bearer ')) {
+  //     return res
+  //         .status(401)
+  //         .send({ message: 'Необходима авторизация' });
+  // }
 
-    //const token = authorization.replace('Bearer ', ''); // извлечение токена полученного из заголовка authorization, const { authorization } = req.headers
+  // const token = authorization.replace('Bearer ', '');
+  // извлечение токена полученного из заголовка authorization, const { authorization } = req.headers
 
+  const token = authorization;
+  let payload;
 
-    const token = authorization
-    let payload;
+  try {
+    payload = jwt.verify(token, 'some-secret-key');
+  } catch (err) {
+    next(new AuthErr('Необходима авторизация'));
+  }
 
-    try {
-        payload = jwt.verify(token, 'some-secret-key');
-    } catch (err) {
-        next(new authErr('Необходима авторизация'));
-    }
+  req.user = payload; // записываем пейлоуд в объект запроса
 
-    req.user = payload; // записываем пейлоуд в объект запроса
-
-    next();
-}; 
+  next();
+};
