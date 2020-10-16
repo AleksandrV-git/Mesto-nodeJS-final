@@ -15,7 +15,7 @@ module.exports = {
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "linebreak-style": [ // Применять согласованный стиль переноса строки
       "error",
-      "unix",
+      "windows",
     ],
   },
 };
