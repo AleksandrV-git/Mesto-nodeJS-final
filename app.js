@@ -1,3 +1,7 @@
+require('dotenv').config();
+// eslint-disable-next-line no-console
+console.log(process.env.NODE_ENV);
+
 const express = require('express');
 const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
@@ -34,7 +38,7 @@ app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
   }),
 }), login);

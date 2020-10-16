@@ -4,8 +4,8 @@
   "description": "Версия 0.0.1",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "cross-env NODE_ENV=production node app.js",
+    "dev": "cross-env NODE_ENV=development nodemon app.js"
   },
   "author": "AleksandrV",
   "license": "ISC",
@@ -20,6 +20,8 @@
     "body-parser": "^1.19.0",
     "celebrate": "^13.0.3",
     "cookie-parser": "^1.4.5",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-rate-limit": "^5.1.3",
     "express-winston": "^4.0.5",
