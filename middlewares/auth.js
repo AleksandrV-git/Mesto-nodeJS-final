@@ -1,13 +1,14 @@
 /*eslint-env es6*/
 const jwt = require('jsonwebtoken');
 
+const authErr = require('../errors/auth-err');
+
 module.exports = (req, res, next) => {
     const authorization = req.cookies.jwt;
 
     if (!authorization) {
-        return res
-            .status(401)
-            .send({ message: 'Необходима авторизация' });
+        next(new authErr('Необходима авторизация'));
+        return;
     }
 
     // if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -25,9 +26,7 @@ module.exports = (req, res, next) => {
     try {
         payload = jwt.verify(token, 'some-secret-key');
     } catch (err) {
-        return res
-            .status(401)
-            .send({ message: 'Необходима авторизация' });
+        next(new authErr('Необходима авторизация'));
     }
 
     req.user = payload; // записываем пейлоуд в объект запроса
