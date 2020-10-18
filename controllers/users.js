@@ -49,7 +49,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .orFail(new NotFoundErr('Запрашиваемый ресурс не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name !== 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new ReqErr('Переданны некорректные данные'));
       } else { next(err); }
     });
@@ -71,11 +71,14 @@ module.exports.createUser = (req, res, next) => {
       res.send({ data: { name, about, avatar, email, _id } });
     })
     .catch((err) => {
+      if (!err.errors.email) {
+        next(new ReqErr('Переданы некорректные данные'));
+      } else
       if (err.errors.email.message === 'Error, expected value to be unique.') {
         next(new NewErr('Переданы некорректные данные', 409));
       } else
       if (err.name === 'ValidationError') {
-        next(new ReqErr('Переданны некорректные данные'));
+        next(new ReqErr('Переданы некорректные данные'));
       } else { next(err); }
     });
 };

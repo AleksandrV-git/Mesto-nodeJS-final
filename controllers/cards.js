@@ -18,8 +18,7 @@ module.exports.DeleteCardById = (req, res, next) => {
       if (String(card.owner) !== req.user._id) {
         throw new NewErr('Вы не можете удалять карточки других пользователей', 403);
       }
-      cardModel.remove();
-      res.send({ data: card });
+      card.remove().then((Card) => res.send(Card));
     })
     .catch(next);
 };
