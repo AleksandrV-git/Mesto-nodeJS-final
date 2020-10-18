@@ -10,15 +10,13 @@ module.exports = (req, res, next) => {
     next(new AuthErr('Необходима авторизация'));
     return;
   }
-
-  // if (!authorization || !authorization.startsWith('Bearer ')) {
-  //     return res
-  //         .status(401)
-  //         .send({ message: 'Необходима авторизация' });
-  // }
-
-  // const token = authorization.replace('Bearer ', '');
-  // извлечение токена полученного из заголовка authorization, const { authorization } = req.headers
+  if (!JWT_SECRET && NODE_ENV !== 'development') {
+    // eslint-disable-next-line no-console
+    console.log('JWT_SECRET not find');
+    // eslint-disable-next-line no-undef
+    next(err);
+    return;
+  }
 
   const token = authorization;
   let payload;

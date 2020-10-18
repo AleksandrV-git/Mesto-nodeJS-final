@@ -85,6 +85,13 @@ module.exports.login = (req, res, next) => {
 
   return UserModel.findUserByCredentials(email, password)
     .then((user) => {
+      if (!JWT_SECRET && NODE_ENV !== 'development') {
+        // eslint-disable-next-line no-console
+        console.log('JWT_SECRET not find');
+        // eslint-disable-next-line no-undef
+        next(err);
+        return;
+      }
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
