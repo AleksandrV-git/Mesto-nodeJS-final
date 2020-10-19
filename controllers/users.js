@@ -71,13 +71,10 @@ module.exports.createUser = (req, res, next) => {
       res.send({ data: { name, about, avatar, email, _id } });
     })
     .catch((err) => {
-      if (!err.errors.email) {
-        next(new ReqErr('Переданы некорректные данные'));
-      } else
-      if (err.errors.email.message === 'Error, expected value to be unique.') {
-        next(new NewErr('Переданы некорректные данные', 409));
-      } else
       if (err.name === 'ValidationError') {
+        if (err.errors.email && err.errors.email.kind === 'unique') {
+          next(new NewErr('Переданы некорректные данные', 409));
+        }
         next(new ReqErr('Переданы некорректные данные'));
       } else { next(err); }
     });

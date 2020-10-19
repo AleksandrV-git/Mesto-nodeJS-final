@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     // eslint-disable-next-line no-console
     console.log('JWT_SECRET not find');
     // eslint-disable-next-line no-undef
-    next(err);
+    next(new AuthErr('Ошибка авторизации'));
     return;
   }
 
@@ -25,6 +25,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
     next(new AuthErr('Необходима авторизация'));
+    return;
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
