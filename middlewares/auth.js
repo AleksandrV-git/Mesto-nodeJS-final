@@ -13,7 +13,6 @@ module.exports = (req, res, next) => {
   if (!JWT_SECRET && NODE_ENV !== 'development') {
     // eslint-disable-next-line no-console
     console.log('JWT_SECRET not find');
-    // eslint-disable-next-line no-undef
     next(new AuthErr('Ошибка авторизации'));
     return;
   }
