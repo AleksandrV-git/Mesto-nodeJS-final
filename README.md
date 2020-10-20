@@ -40,8 +40,8 @@ NodeJS, express, REST API
 - Скачать или склонировать репозиторий
 - Установить NodeJS и MongoDB
 - Установить зависимости при помощи npm - `npm i`
-- Команда npm run start запускает сервер в production режиме на localhost:3000
-  для работы в в production режиме необходимо добавить .env файл с секретным ключом JWT_SECRET
+- Команда npm run start запускает сервер в production режиме на localhost:3000. 
+Для работы в в production режиме необходимо добавить .env файл с секретным ключом JWT_SECRET и записью NODE_ENV=production
 - Команда npm run dev запускает сервер на localhost:3000 с хот релоудом
 
 ## Ссылка на сервер в Яндекс Облаке:

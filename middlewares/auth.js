@@ -2,6 +2,7 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 
 const AuthErr = require('../errors/auth-err');
+const NewErr = require('../errors/new-err');
 
 module.exports = (req, res, next) => {
   const authorization = req.cookies.jwt;
@@ -13,7 +14,7 @@ module.exports = (req, res, next) => {
   if (!JWT_SECRET && NODE_ENV !== 'development') {
     // eslint-disable-next-line no-console
     console.log('JWT_SECRET not find');
-    next(new AuthErr('Ошибка авторизации'));
+    next(new NewErr('На сервере произошла ошибка', 500));
     return;
   }
 

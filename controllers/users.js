@@ -5,7 +5,6 @@ const UserModel = require('../models/user.js');
 
 const NotFoundErr = require('../errors/not-found-err');
 const ReqErr = require('../errors/req-err');
-const AuthErr = require('../errors/auth-err');
 const NewErr = require('../errors/new-err');
 
 module.exports.getUsers = (req, res, next) => {
@@ -75,8 +74,9 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         if (err.errors.email && err.errors.email.kind === 'unique') {
           next(new NewErr('Переданы некорректные данные', 409));
+        } else {
+          next(new ReqErr('Переданы некорректные данные'));
         }
-        next(new ReqErr('Переданы некорректные данные'));
       } else { next(err); }
     });
 };
@@ -89,7 +89,7 @@ module.exports.login = (req, res, next) => {
       if (!JWT_SECRET && NODE_ENV !== 'development') {
         // eslint-disable-next-line no-console
         console.log('JWT_SECRET not find');
-        next(new AuthErr('Ошибка авторизации'));
+        next(new NewErr('На сервере произошла ошибка', 500));
         return;
       }
       // создадим токен
