@@ -56,12 +56,11 @@ module.exports.updateAvatar = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  let { password } = req.body;
+  const { password } = req.body;
   if (!password || password.length < 8 || /\s/.test(password)) {
     throw new ReqErr('некорректный пароль');
   }
-  password = null;
-  bcrypt.hash(req.body.password, 10)
+  bcrypt.hash(password, 10)
     .then((hash) => {
       const { email, name, about, avatar } = req.body;
       return UserModel.create({ name, about, avatar, email, password: hash });
