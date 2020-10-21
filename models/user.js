@@ -1,8 +1,10 @@
-/*eslint-env es6*/
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
-const uniqueValidator = require('mongoose-unique-validator')
+const isURL = require('validator/lib/isURL');
+const uniqueValidator = require('mongoose-unique-validator');
 const bcrypt = require('bcrypt');
+
+const AuthErr = require('../errors/auth-err');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,10 +22,8 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator: function(v) {
-        return /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/.test(v);
-      },
-      message: `error`
+      validator: (v) => isURL(v),
+      message: 'error',
     },
     required: true,
   },
@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 8,
-    select: false
+    select: false,
   },
 });
 
@@ -50,13 +50,13 @@ userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new AuthErr('Неправильные почта или пароль'));
       }
 
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new AuthErr('Неправильные почта или пароль'));
           }
 
           return user;
@@ -64,4 +64,4 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     });
 };
 
-module.exports = mongoose.model('userModel', userSchema); 
+module.exports = mongoose.model('userModel', userSchema);

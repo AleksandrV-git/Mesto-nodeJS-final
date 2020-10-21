@@ -1,75 +1,55 @@
-/*eslint-env es6*/
 const cardModel = require('../models/card.js');
 
-module.exports.getCards = (req, res) => {
+const NotFoundErr = require('../errors/not-found-err');
+const ReqErr = require('../errors/req-err');
+const NewErr = require('../errors/new-err');
+
+module.exports.getCards = (req, res, next) => {
   cardModel.find({})
-    .then(card => res.send({ data: card }))
-    .catch(() => res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }));
+    .orFail(new NotFoundErr('Запрашиваемый ресурс не найден'))
+    .then((card) => res.send({ data: card }))
+    .catch(next);
 };
 
-module.exports.DeleteCardById = (req, res) => {
+module.exports.DeleteCardById = (req, res, next) => {
   cardModel.findById(req.params.cardId)
-    .orFail(new Error('not found'))
+    .orFail(new NotFoundErr('Запрашиваемый ресурс не найден'))
     .then((card) => {
       if (String(card.owner) !== req.user._id) {
-        res.status(403).send({ message: 'Вы не можете удалять карточки других пользователей' });
-        return;
+        throw new NewErr('Вы не можете удалять карточки других пользователей', 403);
       }
-      cardModel.remove();
-      res.send({ data: card });
+      card.remove().then((Card) => res.send(Card));
     })
-    .catch((err) => {
-      if (err.message === "not found") {
-        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
-      } else {
-        res.status(500).send({ message: "Ошибка сервера" });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-  const ownerId = req.user._id
+  const ownerId = req.user._id;
 
   cardModel.create({ name, link, owner: ownerId })
-    .then(card => res.send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Переданы некорректные данные" });
-      } else {
-        res.status(500).send({ message: "Ошибка сервера" });
-      }
+      if (err.name === 'ValidationError') {
+        next(new ReqErr('Переданны некорректные данные'));
+      } else { next(err); }
     });
 };
 
-module.exports.likeCard = (req, res) =>
-  cardModel.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
-  )
-    .orFail(new Error('not found'))
-    .then(card => res.send({ data: card }))
-    .catch((err) => {
-      if (err.message === "not found") {
-        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
-      } else {
-        res.status(500).send({ message: "Ошибка сервера" });
-      }
-    });
+module.exports.likeCard = (req, res, next) => cardModel.findByIdAndUpdate(
+  req.params.cardId,
+  { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+  { new: true },
+)
+  .orFail(new NotFoundErr('Запрашиваемый ресурс не найден'))
+  .then((card) => res.send({ data: card }))
+  .catch(next);
 
-module.exports.dislikeCard = (req, res) =>
-  cardModel.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
-  )
-    .orFail(new Error('not found'))
-    .then(card => res.send({ data: card }))
-    .catch((err) => {
-      if (err.message === "not found") {
-        res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
-      } else {
-        res.status(500).send({ message: "Ошибка сервера" });
-      }
-    });
+module.exports.dislikeCard = (req, res, next) => cardModel.findByIdAndUpdate(
+  req.params.cardId,
+  { $pull: { likes: req.user._id } }, // убрать _id из массива
+  { new: true },
+)
+  .orFail(new NotFoundErr('Запрашиваемый ресурс не найден'))
+  .then((card) => res.send({ data: card }))
+  .catch(next);

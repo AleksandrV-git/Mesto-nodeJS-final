@@ -1,5 +1,5 @@
-/*eslint-env es6*/
 const mongoose = require('mongoose');
+const isURL = require('validator/lib/isURL');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,27 +11,25 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     validate: {
-      validator: function(v) {
-        return /^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/.test(v);
-      },
-      message: `error`
+      validator: (v) => isURL(v),
+      message: 'error',
     },
     required: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'userModel',
-    required: true
+    required: true,
   },
   likes: {
-    type: Array,
+    type: [mongoose.Schema.Types.ObjectId],
     required: true,
-    default: []
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
 });
 
-module.exports = mongoose.model('cardModel', cardSchema); 
+module.exports = mongoose.model('cardModel', cardSchema);
