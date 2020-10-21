@@ -58,7 +58,7 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.createUser = (req, res, next) => {
   const { password } = req.body;
   if (!password || password.length < 8 || /\s/.test(password)) {
-    throw new ReqErr('некорректный пароль');
+    throw new ReqErr('Некорректный пароль. Пароль отсутствует или его длина меньше 8 символов');
   }
   bcrypt.hash(password, 10)
     .then((hash) => {
