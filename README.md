@@ -12,19 +12,19 @@
 - Аутентификация и авторизация пользователей
 
 ## Оюрабатываемые запросы:
-ЗАПРОС                        ОПИСАНИЕ
-
-GET /users	                  возврвщвает JSON-список всех пользователей
-GET /cards	                  возврвщвает JSON-список всех карточек
-GET /users/:userId	          возврвщвает JSON-пользователя с переданным после /users идентификатором. 
-POST /signup                  создаёт пользователя;
-POST /cards                   создаёт карточку;
-POST /signin                  авторизация пользователя;
-PATCH /users/me               обновляет профиль
-PATCH /users/me/avatar        обновляет аватар
-PUT /cards/:cardId/likes      поставить лайк карточке
-DELETE /cards/:cardId/likes   убрать лайк с карточки 
-DELETE /cards/:cardId         удаляет карточку 
+|ЗАПРОС|                        |ОПИСАНИЕ|
+|----:|:----:|:----------|
+|GET /cards|	                  |возврвщвает JSON-список всех карточек|
+|GET /users|	                  |возврвщвает JSON-список всех пользователей|
+|GET /users/:userId|	          |возврвщвает JSON-пользователя с переданным после /users идентификатором| 
+|POST /signup|                  |создаёт пользователя|
+|POST /cards|                   |создаёт карточку|
+|POST /signin|                  |авторизация пользователя|
+|PATCH /users/me|               |обновляет профиль|
+|PATCH /users/me/avatar|        |обновляет аватар|
+|PUT /cards/:cardId/likes|      |поставить лайк карточке|
+|DELETE /cards/:cardId/likes|   |убрать лайк с карточки| 
+|DELETE /cards/:cardId|         |удаляет карточку| 
 
 ## Стэк технологий:
 NodeJS, express, REST API
